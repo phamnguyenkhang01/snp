@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<div class="d-flex justify-content-center mt-4">
+    <div class="card shadow-sm" style="width: 40%;">
+        <div class="card-header bg-info">
+            <h5 class="fw-bold mb-1">Create Post</h5>
+        </div>
+        <div class="card-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="filedWrapper">
+                    {{ field.errors }}
+                    <h5 class="card-text">Text</h5>
+                    {{ form.text}}
+                </div>
+                <div class="filedWrapper">
+                    {{ field.errors }}
+                    <h5 class="card-text">Image</h5>
+                    {{ form.img}}
+                </div>
+
+                <input type="text" value="{{user.pk}}" name="author" hidden>
+                <input type="submit" value="Create"> 
+            </form>
+        </div>
+        <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
+    </div>
+</div>
+
+{% endblock content %}
