@@ -1,10 +1,112 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log In</button>
-</form>
+<style>
+    body {
+        background-color: #f0f2f5;
+        font-family: Arial, sans-serif;
+    }
+
+    .login-container {
+        width: 360px;
+        margin: 100px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    h2 {
+        color: #3b5998;
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input {
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        width: 100%;
+    }
+
+    input::placeholder {
+        color: #aaa;
+    }
+
+    button {
+        background: #1877f2;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background: #165db5;
+    }
+
+    .forgot-password {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .forgot-password a {
+        color: #1877f2;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+
+    .separator {
+        margin: 15px 0;
+        border: none;
+        height: 1px;
+        background-color: #ddd;
+    }
+
+    .create-account {
+        background: #42b72a;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+    .create-account:hover {
+        background: #36a420;
+    }
+</style>
+
+<div class="login-container">
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Email or phone number" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Log In</button>
+    </form>
+
+    <div class="forgot-password">
+        <a href="{% url 'password_reset' %}">Forgot password?</a>
+    </div>
+
+    <hr class="separator">
+
+    <button class="create-account" onclick="window.location.href='{% url 'signup' %}'">Create New Account</button>
+</div>
 {% endblock content %}
