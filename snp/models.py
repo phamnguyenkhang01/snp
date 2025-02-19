@@ -7,7 +7,7 @@ from django.db import models
 class Post(models.Model):
     id = models.AutoField(primary_key=True)
     text = models.TextField()
-    img = models.CharField(max_length=256)
+    img = models.CharField(max_length=256, null=True, blank=True)
     date_time = models.DateTimeField(default=datetime.now)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     
