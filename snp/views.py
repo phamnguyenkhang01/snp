@@ -19,6 +19,9 @@ class PostListView(ListView):
     model = Post
     template_name = 'posts.html'
     context_object_name = 'posts'
+    def get_queryset(self):
+        # Order posts by 'date_time' in descending order (newest posts first)
+        return Post.objects.all().order_by('-date_time')
 
 class PostDetailView(DetailView):
     model = Post
@@ -29,6 +32,9 @@ class PostCreateView(CreateView):
     model = Post
     template_name = 'post_create.html'
     fields = ['text', 'img', 'author']
+
+
+
     
 class PostUpdateView(UpdateView):
     model = Post
