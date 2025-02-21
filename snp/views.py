@@ -5,6 +5,10 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 
 from .models import Post
 
+from django.http import JsonResponse
+from django.views import View
+from .models import Post, Like
+
 # Create your views here.
 def homePageView(request):
     return HttpResponse("Hello world")
@@ -45,3 +49,22 @@ class PostDeleteView(DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('posts')
+    
+class LikePostView(View):
+    def post(self, request, pk):
+        # Fetch the post object using the primary key
+        post = Post.objects.get(pk=pk)
+        
+        # Check if the user has already liked the post (optional, you can prevent double likes)
+        user = request.user
+        if Like.objects.filter(post=post, user=user).exists():
+            return JsonResponse({'error': 'You have already liked this post'}, status=400)
+        
+        # Create a new Like entry
+        Like.objects.create(post=post, user=user)
+        
+        # Get the updated like count for the post
+        like_count = post.likes.count()
+        
+        # Return the updated like count as JSON
+        return JsonResponse({'like_count': like_count})

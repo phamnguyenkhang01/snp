@@ -21,12 +21,41 @@
                 </button>
             </a>
 
-            <p class="text-dark small">{{ post.text }}</p> <!-- Added 'small' class to make text smaller -->
+            <p class="text-dark small">{{ post.text }}</p>
         </div>
-        {% if post.img %} 
-            <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
-        {% endif %}
+        <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
+
+        <!-- Like button section -->
+        <div class="card-footer bg-white text-center">
+            <button id="like-btn" class="btn btn-outline-primary">
+                <i class="bi bi-hand-thumbs-up"></i> Like <span id="like-count">{{ post.likes.count }}</span>
+            </button>
+        </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("like-btn").addEventListener("click", function () {
+        fetch("{% url 'like_post' post.pk %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.like_count !== undefined) {
+                document.getElementById("like-count").innerText = data.like_count;
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
 
 {% endblock content %}
