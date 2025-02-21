@@ -23,7 +23,9 @@
 
             <p class="text-dark small">{{ post.text }}</p> <!-- Added 'small' class to make text smaller -->
         </div>
-        <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
+        {% if post.img %} 
+            <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
+        {% endif %}
     </div>
 </div>
 

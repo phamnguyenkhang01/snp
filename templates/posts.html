@@ -20,7 +20,9 @@
                     <p class="text-muted small mb-3">{{ post.date_time }}</p>
                     <p class="text-dark small">{{ post.text }}</p> <!-- Added 'small' class to make text smaller -->
                 </div>
-                <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
+                {% if post.img %}
+                    <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
+                {% endif %}
             </div>
         </a>
     {% endfor %}
