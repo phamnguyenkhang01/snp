@@ -25,12 +25,51 @@
         </div>
         <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
 
-        <!-- Like button section -->
+        <!-- Like and Comment button section -->
         <div class="card-footer bg-white text-center">
-            <button id="like-btn" class="btn btn-outline-primary">
+            <button id="like-btn" class="btn btn-outline-primary me-2">
                 <i class="bi bi-hand-thumbs-up"></i> Like <span id="like-count">{{ post.likes.count }}</span>
             </button>
+            
+            <button id="comment-btn" class="btn btn-outline-secondary">
+                <i class="bi bi-chat-dots"></i> Comment
+            </button>
         </div>
+
+        <!-- Comment Section -->
+        <div class="card-footer bg-light">
+            <div class="input-group">
+                <input type="text" id="comment-input" class="form-control" placeholder="Comment as {{ user.username }}">
+                <button id="send-comment-btn" class="btn btn-primary" disabled>
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Display Comments -->
+        <div class="card-body">
+            <ul id="comment-list" class="list-unstyled">
+                {% for comment in comments %}
+                    <li class="mb-3">
+                        <div class="p-3 bg-light rounded shadow-sm">
+                            <div class="fw-bold mb-2">{{ comment.user.username }}</div>
+                            <div>{{ comment.text }}</div>
+                        </div>
+                        <!-- Display the time outside the comment box -->
+                        <div class="text-muted small mt-2">
+                            {{ comment.created_at|timesince }} ago
+                        </div>
+                    </li>
+                {% empty %}
+                    <li>No comments yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        
+        
+        
+        
     </div>
 </div>
 
@@ -56,6 +95,75 @@
             console.error('Error:', error);
         });
     });
+    
+    document.getElementById("send-comment-btn").addEventListener("click", sendComment);
+
+    // Allow sending comment with Enter key
+    document.getElementById("comment-input").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevent the default Enter key behavior (e.g., form submission)
+            sendComment();
+        }
+    });
+
+    // Enable or disable the Send Comment button based on input field content
+    document.getElementById("comment-input").addEventListener("input", function () {
+        let commentText = document.getElementById("comment-input").value.trim();
+        let sendButton = document.getElementById("send-comment-btn");
+
+        if (commentText === "") {
+            sendButton.disabled = true; // Disable button if comment is empty
+        } else {
+            sendButton.disabled = false; // Enable button if comment has text
+        }
+    });
+
+    function sendComment() {
+        let commentInput = document.getElementById("comment-input");
+        let commentText = commentInput.value.trim();
+    
+        if (commentText === "") {
+            return;
+        }
+    
+        fetch("{% url 'add_comment' post.pk %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({ text: commentText }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                // Dynamically add the new comment to the list
+                let commentList = document.getElementById("comment-list");
+    
+                // Create new comment element
+                let newComment = document.createElement("li");
+                newComment.className = "mb-3";  // Spacing between comments
+                newComment.innerHTML = `
+                    <div class="p-3 bg-light rounded shadow-sm">
+                        <div class="fw-bold mb-2">${data.user}</div>
+                        <div>${data.text}</div>
+                    </div>
+                `;
+                // Prepend the new comment to the top of the list
+                commentList.prepend(newComment);
+    
+                // Clear the input field and disable the send button
+                commentInput.value = "";
+                document.getElementById("send-comment-btn").disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+    
 </script>
 
 {% endblock content %}
