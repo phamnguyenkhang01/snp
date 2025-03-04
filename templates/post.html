@@ -21,12 +21,143 @@
                 </button>
             </a>
 
-            <p class="text-dark small">{{ post.text }}</p> <!-- Added 'small' class to make text smaller -->
+            <p class="text-dark small">{{ post.text }}</p>
         </div>
-        {% if post.img %} 
-            <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
-        {% endif %}
+        <img src="{% static 'snp/images/' %}{{ post.img }}" class="card-img-bottom" alt="Cover Image">
+
+        <!-- Like and Comment button section -->
+        <div class="card-footer bg-white text-center">
+            <button id="like-btn" class="btn {% if user in post.likes.all %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">
+                <i class="bi bi-hand-thumbs-up"></i> Like <span id="like-count">{{ post.likes.count }}</span>
+            </button>            
+            
+            <button id="comment-btn" class="btn btn-outline-secondary">
+                <i class="bi bi-chat-dots"></i> Comment
+            </button>
+        </div>
+
+        <!-- Comment Section -->
+        <div class="card-footer bg-light">
+            <div class="input-group">
+                <input type="text" id="comment-input" class="form-control" placeholder="Comment as {{ user.username }}">
+                <button id="send-comment-btn" class="btn btn-primary" disabled>
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Display Comments -->
+        <div class="card-body">
+            <ul id="comment-list" class="list-unstyled">
+                {% for comment in comments %}
+                    <li class="mb-3">
+                        <div class="p-3 bg-light rounded shadow-sm">
+                            <div class="fw-bold mb-2">{{ comment.user.username }}</div>
+                            <div>{{ comment.text }}</div>
+                        </div>
+                        <!-- Display the time outside the comment box -->
+                        <div class="text-muted small mt-2">
+                            {{ comment.created_at|timesince }} ago
+                        </div>
+                    </li>
+                {% empty %}
+                    <li>No comments yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        
+        
+        
+        
     </div>
 </div>
+
+<script>
+    document.getElementById("comment-btn").addEventListener("click", function () {
+        let commentInput = document.getElementById("comment-input");
+        commentInput.focus(); // Focus on the comment input field
+        commentInput.scrollIntoView({ behavior: "smooth", block: "center" }); // Scroll smoothly to the input field
+    });
+
+    document.getElementById("like-btn").addEventListener("click", function () {
+        fetch("{% url 'like_post' post.pk %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.like_count !== undefined) {
+                document.getElementById("like-count").innerText = data.like_count;
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+    
+    document.getElementById("send-comment-btn").addEventListener("click", sendComment);
+
+    document.getElementById("comment-input").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendComment();
+        }
+    });
+
+    document.getElementById("comment-input").addEventListener("input", function () {
+        let commentText = document.getElementById("comment-input").value.trim();
+        let sendButton = document.getElementById("send-comment-btn");
+
+        sendButton.disabled = commentText === "";
+    });
+
+    function sendComment() {
+        let commentInput = document.getElementById("comment-input");
+        let commentText = commentInput.value.trim();
+    
+        if (commentText === "") return;
+    
+        fetch("{% url 'add_comment' post.pk %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({ text: commentText }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                let commentList = document.getElementById("comment-list");
+    
+                let newComment = document.createElement("li");
+                newComment.className = "mb-3";
+                newComment.innerHTML = `
+                    <div class="p-3 bg-light rounded shadow-sm">
+                        <div class="fw-bold mb-2">${data.user}</div>
+                        <div>${data.text}</div>
+                    </div>
+                `;
+                commentList.prepend(newComment);
+    
+                commentInput.value = "";
+                document.getElementById("send-comment-btn").disabled = true;
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+</script>
+
 
 {% endblock content %}
