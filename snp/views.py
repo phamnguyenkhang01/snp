@@ -5,6 +5,8 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+from accounts.models import CustomUser
+from accounts.forms import CustomUserChangeForm
 from .models import Post
 
 from django.http import JsonResponse
@@ -26,6 +28,14 @@ class HomePageView(TemplateView):
 class AboutPageView(TemplateView):
     template_name = 'about.html'
     
+class ProfileUpdateView(UpdateView):
+    model = CustomUser
+    form = CustomUserChangeForm
+    template_name = 'user_update.html'
+    fields = ['mobile', 'email', 'avatar', 'first_name', 'last_name', 'bio', 'dob', 'gender']
+    
+    success_url=reverse_lazy('posts')
+
 class PostListView(ListView):
     model = Post
     template_name = 'posts.html'
@@ -49,9 +59,6 @@ class PostCreateView(CreateView):
     template_name = 'post_create.html'
     fields = ['text', 'img', 'author']
 
-
-
-    
 class PostUpdateView(UpdateView):
     model = Post
     template_name = 'post_update.html'

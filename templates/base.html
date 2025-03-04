@@ -27,6 +27,12 @@
                             <a class="nav-link" href="{% url 'login' %}">Login</a>
                         </li>
                         <li class="nav-item d-flex">
+                            <a class="nav-link" href="{% url 'password_reset' %}">Reset Password</a>
+                        </li>
+                        <li class="nav-item d-flex">
+                            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                        </li>
+                        <li class="nav-item d-flex">
                             <a class="nav-link" href="{% url 'about' %}">About</a>
                         </li>
                         {% else %}
@@ -37,17 +43,11 @@
                             <a class="nav-link" href="{% url 'post_create' %}">Add Post</a>
                         </li>
                         <li class="nav-item d-flex">
-                            <a class="nav-link" href="/">Hello {{user.username}}</a>
-                        </li>
-                        {% comment %} <li class="nav-item d-flex">
-                            <form method="post" action="{% url 'logout' %}">
-                                {% csrf_token %}
-                                <button type="submit">logout</button>
-                            </form>
+                            <a class="nav-link" href="/profile/update/{{user.id}}">Hello {{user.username}}</a>
                         </li>
                         <li class="nav-item d-flex">
-                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                        </li> {% endcomment %}
+                            <a class="nav-link" href="{% url 'password_change' %}">Change Password</a>
+                        </li>
                         <li class="nav-item d-flex">
                             <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit(); return false;">Log Out</a>
                         </li>
