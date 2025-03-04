@@ -27,9 +27,9 @@
 
         <!-- Like and Comment button section -->
         <div class="card-footer bg-white text-center">
-            <button id="like-btn" class="btn btn-outline-primary me-2">
+            <button id="like-btn" class="btn {% if user in post.likes.all %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">
                 <i class="bi bi-hand-thumbs-up"></i> Like <span id="like-count">{{ post.likes.count }}</span>
-            </button>
+            </button>            
             
             <button id="comment-btn" class="btn btn-outline-secondary">
                 <i class="bi bi-chat-dots"></i> Comment
@@ -74,6 +74,12 @@
 </div>
 
 <script>
+    document.getElementById("comment-btn").addEventListener("click", function () {
+        let commentInput = document.getElementById("comment-input");
+        commentInput.focus(); // Focus on the comment input field
+        commentInput.scrollIntoView({ behavior: "smooth", block: "center" }); // Scroll smoothly to the input field
+    });
+
     document.getElementById("like-btn").addEventListener("click", function () {
         fetch("{% url 'like_post' post.pk %}", {
             method: 'POST',
@@ -98,33 +104,25 @@
     
     document.getElementById("send-comment-btn").addEventListener("click", sendComment);
 
-    // Allow sending comment with Enter key
     document.getElementById("comment-input").addEventListener("keydown", function(event) {
         if (event.key === "Enter") {
-            event.preventDefault(); // Prevent the default Enter key behavior (e.g., form submission)
+            event.preventDefault();
             sendComment();
         }
     });
 
-    // Enable or disable the Send Comment button based on input field content
     document.getElementById("comment-input").addEventListener("input", function () {
         let commentText = document.getElementById("comment-input").value.trim();
         let sendButton = document.getElementById("send-comment-btn");
 
-        if (commentText === "") {
-            sendButton.disabled = true; // Disable button if comment is empty
-        } else {
-            sendButton.disabled = false; // Enable button if comment has text
-        }
+        sendButton.disabled = commentText === "";
     });
 
     function sendComment() {
         let commentInput = document.getElementById("comment-input");
         let commentText = commentInput.value.trim();
     
-        if (commentText === "") {
-            return;
-        }
+        if (commentText === "") return;
     
         fetch("{% url 'add_comment' post.pk %}", {
             method: "POST",
@@ -139,22 +137,18 @@
             if (data.error) {
                 alert(data.error);
             } else {
-                // Dynamically add the new comment to the list
                 let commentList = document.getElementById("comment-list");
     
-                // Create new comment element
                 let newComment = document.createElement("li");
-                newComment.className = "mb-3";  // Spacing between comments
+                newComment.className = "mb-3";
                 newComment.innerHTML = `
                     <div class="p-3 bg-light rounded shadow-sm">
                         <div class="fw-bold mb-2">${data.user}</div>
                         <div>${data.text}</div>
                     </div>
                 `;
-                // Prepend the new comment to the top of the list
                 commentList.prepend(newComment);
     
-                // Clear the input field and disable the send button
                 commentInput.value = "";
                 document.getElementById("send-comment-btn").disabled = true;
             }
@@ -163,7 +157,7 @@
             console.error("Error:", error);
         });
     }
-    
 </script>
+
 
 {% endblock content %}
