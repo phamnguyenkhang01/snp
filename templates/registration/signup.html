@@ -1,51 +1,181 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% comment %} {% block content %}
 <h2>Sign Up</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Sign Up</button>
 </form>
-{% endblock content %}
-
-{% comment %} {% extends 'base.html' %}
-
+{% endblock content %} {% endcomment %}
 {% block content %}
-<div class="container mt-5">
+  <style>
+    .signup-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .card-body {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .form-group small {
+      font-size: 0.9em;
+      color: gray;
+    }
+
+    .invalid-feedback {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+
+    .btn-success {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+
+    /* Avatar input style */
+    .signup-container input[type="file"] {
+      border: 1px solid #ccc;
+      padding: 8px;
+      border-radius: 4px;
+      width: 100%;
+      background-color: #fff;
+    }
+
+    /* Bio textarea style */
+    .signup-container textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Placeholder styling */
+    ::placeholder {
+      color: #aaa;
+    }
+
+    .login-link {
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    .login-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-lg p-4">
                 <h2 class="text-center">Create a new account</h2>
                 <p class="text-center">It's quick and easy.</p>
-
-                {% if form.errors %}
-                <div class="alert alert-warning text-center p-2" style="background-color: yellow; color: black;">
-                    <strong>Please choose a more secure password.</strong> It should be at least 8 characters, not too common, and contain a mix of letters and numbers.
-                </div>
-                {% endif %}
-                
                 <hr>
-                <form method="post">
+                <form method="post" class="needs-validation">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <input type="text" name="{{ form.username.name }}" class="form-control" placeholder="Username" required>
+                    
+                    <!-- Username -->
+                    <div class="form-group">
+                        <input type="text" name="username" class="form-control" placeholder="Username" value="{{ form.username.value|default:'' }}" autocomplete="off" required>
                     </div>
-                    <div class="mb-3">
-                        <input type="password" name="{{ form.password1.name }}" class="form-control" placeholder="Password" required>
+                    
+                    <!-- Password -->
+                    <div class="form-group">
+                        <input type="password" name="password1" class="form-control" placeholder="Password" value="{{ form.password1.value|default:'' }}" autocomplete="new-password" required>
                     </div>
-                    <div class="mb-3">
-                        <input type="password" name="{{ form.password2.name }}" class="form-control" placeholder="Confirm Password" required>
+                    
+                    <!-- Password Confirmation -->
+                    <div class="form-group">
+                        <input type="password" name="password2" class="form-control" placeholder="Confirm Password" value="{{ form.password2.value|default:'' }}" autocomplete="new-password" required>
                     </div>
+
+                    <!-- Date of Birth (Text Input) -->
+                    <div class="form-group">
+                        <input type="text" name="dob" class="form-control" placeholder="Birthday" value="{{ form.dob.value|default:'' }}" required>
+                    </div>
+
+                    <!-- Gender (Text Input) -->
+                    <div class="form-group">
+                        <input type="text" name="gender" class="form-control" placeholder="Gender" value="{{ form.gender.value|default:'' }}" required>
+                    </div>
+
+                    <!-- Mobile -->
+                    <div class="form-group">
+                        <input type="text" name="mobile" class="form-control" placeholder="Mobile" value="{{ form.mobile.value|default:'' }}" required>
+                    </div>
+                    
+                    <!-- Avatar (Text Input) -->
+                    <div class="form-group">
+                        <input type="text" name="avatar" class="form-control" placeholder="Avatar URL" value="{{ form.avatar.value|default:'' }}" required>
+                    </div>
+                    
+                    <!-- Bio -->
+                    <div class="form-group">
+                        <textarea name="bio" class="form-control" placeholder="Bio" required>{{ form.bio.value|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Sign Up Button -->
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-success w-50">Sign Up</button>
                     </div>
                 </form>
+
+                <!-- Login Link -->
                 <h5 class="text-center mt-3">
                     <a href="{% url 'login' %}" class="login-link">Already have an account?</a>
                 </h5>
             </div>
         </div>
     </div>
-</div>
-{% endblock content %} {% endcomment %}
+  </div>
+  
+{% endblock content %}
