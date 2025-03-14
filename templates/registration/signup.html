@@ -138,6 +138,11 @@
                         <input type="password" name="password2" class="form-control" placeholder="Confirm Password" value="{{ form.password2.value|default:'' }}" autocomplete="new-password" required>
                     </div>
 
+                    <!-- Email -->
+                    <div class="form-group">
+                        <input type="text" name="email" class="form-control" placeholder="Email" value="{{ form.email.value|default:'' }}" required>
+                    </div>
+
                     <!-- Date of Birth (Text Input) -->
                     <div class="form-group">
                         <input type="text" name="dob" class="form-control" placeholder="Birthday" value="{{ form.dob.value|default:'' }}" required>
