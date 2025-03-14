@@ -1,8 +1,9 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from accounts.models import CustomUser
@@ -28,7 +29,7 @@ class HomePageView(TemplateView):
 class AboutPageView(TemplateView):
     template_name = 'about.html'
     
-class ProfileUpdateView(UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser
     form = CustomUserChangeForm
     template_name = 'user_update.html'
@@ -36,15 +37,17 @@ class ProfileUpdateView(UpdateView):
     
     success_url=reverse_lazy('posts')
 
-class PostListView(ListView):
+class PostListView(LoginRequiredMixin, ListView):
     model = Post
     template_name = 'posts.html'
     context_object_name = 'posts'
+    
     def get_queryset(self):
         # Order posts by 'date_time' in descending order (newest posts first)
         return Post.objects.all().order_by('-date_time')
+    
 
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
@@ -54,20 +57,29 @@ class PostDetailView(DetailView):
         context['comments'] = Comment.objects.filter(post=self.object).order_by('-created_at')
         return context
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'post_create.html'
-    fields = ['text', 'img', 'author']
+    fields = ['text', 'img']
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     template_name = 'post_update.html'
     fields = ['text', 'img']
+    def test_func(self):
+        obj = self.get_object()
+        return obj.author == self.request.user
     
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('posts')
+    def test_func(self):
+        obj = self.get_object()
+        return obj.author == self.request.user
     
 class LikePostView(View):
     def post(self, request, pk):
