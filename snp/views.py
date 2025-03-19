@@ -17,6 +17,10 @@ from .models import Post, Like, Comment
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 # Create your views here.
@@ -29,13 +33,18 @@ class HomePageView(TemplateView):
 class AboutPageView(TemplateView):
     template_name = 'about.html'
     
-class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CustomUser
     form = CustomUserChangeForm
     template_name = 'user_update.html'
     fields = ['mobile', 'email', 'avatar', 'first_name', 'last_name', 'bio', 'dob', 'gender']
     
     success_url=reverse_lazy('posts')
+    
+    def test_func(self):
+        obj = self.get_object()
+        return obj == self.request.user
+
 
 class PostListView(LoginRequiredMixin, ListView):
     model = Post
