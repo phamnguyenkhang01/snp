@@ -36,4 +36,20 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.text[:30]}"
-    
+
+class Friend(models.Model):
+    STATUS = ((1, "pending"), (2, "accepted"), (3, "rejected"), (4, "cancelled"), (5, "deleted"), )
+
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="requests_sent", related_query_name="from_user")
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="requests_received", related_query_name="to_user")
+    requested_at = models.DateTimeField(auto_now_add=True)
+    friended_at = models.DateTimeField(null=True, blank=True)
+    status = models.IntegerField(choices=STATUS, default=1)
+
+    class Meta:
+        constraints =  [
+            models.UniqueConstraint(fields=["from_user", "to_user"], name="unique_friend")
+        ]
+
+    def __str__(self):
+        return f"{self.id} {self.from_user.username} friend with {self.to_user.username}"

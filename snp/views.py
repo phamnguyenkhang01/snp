@@ -12,7 +12,7 @@ from .models import Post
 
 from django.http import JsonResponse
 from django.views import View
-from .models import Post, Like, Comment
+from .models import Post, Like, Comment, Friend
 
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -125,3 +125,14 @@ class AddCommentView(LoginRequiredMixin, View):
             "text": comment.text,
             "created_at": comment.created_at.strftime('%Y-%m-%d %H:%M')
         })
+    
+def friendRequest(request, id):
+    user = request.user
+    friend = CustomUser.objects.get(id=id)
+
+    created = Friend.objects.create(from_user=user, to_user=friend)
+
+    if created:
+        return JsonResponse({"status": "pending"})
+    else:
+        return JsonResponse({"status": "requested"})
