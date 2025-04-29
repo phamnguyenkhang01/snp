@@ -11,9 +11,6 @@ class FriendAdmin(
     admin.ModelAdmin
 ):
     readonly_fields = ('requested_at',)
-    
-<<<<<<< Updated upstream
 admin.site.register(Friend, FriendAdmin)
-=======
-admin.site.register(Friend, FriendAdmin)
->>>>>>> Stashed changes
+
+
