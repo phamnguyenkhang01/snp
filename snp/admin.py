@@ -6,4 +6,11 @@ from .models import Post, Like, Comment, Friend
 admin.site.register(Post)
 admin.site.register(Like)
 admin.site.register(Comment)
-admin.site.register(Friend)
+
+class FriendAdmin(
+    admin.ModelAdmin
+):
+    readonly_fields = ('requested_at',)
+admin.site.register(Friend, FriendAdmin)
+
+

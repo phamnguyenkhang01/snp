@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -125,7 +126,9 @@ class AddCommentView(LoginRequiredMixin, View):
             "text": comment.text,
             "created_at": comment.created_at.strftime('%Y-%m-%d %H:%M')
         })
-    
+
+
+@login_required
 def friendRequest(request, id):
     user = request.user
     friend = CustomUser.objects.get(id=id)
@@ -136,3 +139,17 @@ def friendRequest(request, id):
         return JsonResponse({"status": "pending"})
     else:
         return JsonResponse({"status": "requested"})
+
+    
+@login_required
+def friendAccept(request, id ):
+    friendRequest = Friend.objects.get(id=id)
+
+    if request.user == friendRequest.to_user:
+        friendRequest.status = 2
+        friendRequest.save()
+
+        return JsonResponse({"status" : "accepted"})
+    else:
+        return JsonResponse({"status": "rejected"})
+
