@@ -66,6 +66,14 @@ II. Use cases (Elaboration):
 2. Use Cases Diagram:
 3. Requirement Document: Detailed Use Cases:
 
+      UC04-Friends Management:
+        Send Friend Request, Accept Friend Request, Decline Friend Request, Cancel Friend Request, Unfriend, List friends, share (posts), request lists (send, receive)
+        requested_at time, friended_at time, status: pending, accepted, rejected, cancelled, deleted
+        Profile & Post Visibility – A user can choose who among their friends can see certain posts.
+        Tagging in Posts & Comments – Users can tag friends in posts, comments, and photos. 
+        Reactions & Comments – Friends can like, comment, and react to each other's posts.
+        Later: Friend Suggestions – Facebook recommends new friends based on mutual friends and interactions.f
+
 
 
 
