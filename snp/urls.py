@@ -14,4 +14,5 @@ urlpatterns = [
     path('like/<int:pk>/', LikePostView.as_view(), name='like_post'),
     path('post/<int:pk>/comment/', AddCommentView.as_view(), name='add_comment'),
     path('friend/request/<int:id>/', friendRequest, name='friendRequest'),
+    path('friend/accept/<int:id>/', friendAccept, name='friendAccept'),
 ]
